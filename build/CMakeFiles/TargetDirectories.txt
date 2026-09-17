@@ -1,0 +1,3 @@
+/home/oops/Projects/nurbsSurfaces/build/CMakeFiles/nurbs_surface.dir
+/home/oops/Projects/nurbsSurfaces/build/CMakeFiles/edit_cache.dir
+/home/oops/Projects/nurbsSurfaces/build/CMakeFiles/rebuild_cache.dir
