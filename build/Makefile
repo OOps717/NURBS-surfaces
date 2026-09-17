@@ -129,6 +129,155 @@ nurbs_surface/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/build
 .PHONY : nurbs_surface/fast
 
+#=============================================================================
+# Target rules for targets named copy_shaders
+
+# Build rule for target.
+copy_shaders: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 copy_shaders
+.PHONY : copy_shaders
+
+# fast build rule for target.
+copy_shaders/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_shaders.dir/build.make CMakeFiles/copy_shaders.dir/build
+.PHONY : copy_shaders/fast
+
+#=============================================================================
+# Target rules for targets named nurbs_test
+
+# Build rule for target.
+nurbs_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 nurbs_test
+.PHONY : nurbs_test
+
+# fast build rule for target.
+nurbs_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/build
+.PHONY : nurbs_test/fast
+
+Computational/nurbs.o: Computational/nurbs.cpp.o
+.PHONY : Computational/nurbs.o
+
+# target to build an object file
+Computational/nurbs.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Computational/nurbs.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/nurbs.cpp.o
+.PHONY : Computational/nurbs.cpp.o
+
+Computational/nurbs.i: Computational/nurbs.cpp.i
+.PHONY : Computational/nurbs.i
+
+# target to preprocess a source file
+Computational/nurbs.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Computational/nurbs.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/nurbs.cpp.i
+.PHONY : Computational/nurbs.cpp.i
+
+Computational/nurbs.s: Computational/nurbs.cpp.s
+.PHONY : Computational/nurbs.s
+
+# target to generate assembly for a file
+Computational/nurbs.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Computational/nurbs.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/nurbs.cpp.s
+.PHONY : Computational/nurbs.cpp.s
+
+Computational/test.o: Computational/test.cpp.o
+.PHONY : Computational/test.o
+
+# target to build an object file
+Computational/test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/test.cpp.o
+.PHONY : Computational/test.cpp.o
+
+Computational/test.i: Computational/test.cpp.i
+.PHONY : Computational/test.i
+
+# target to preprocess a source file
+Computational/test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/test.cpp.i
+.PHONY : Computational/test.cpp.i
+
+Computational/test.s: Computational/test.cpp.s
+.PHONY : Computational/test.s
+
+# target to generate assembly for a file
+Computational/test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/test.cpp.s
+.PHONY : Computational/test.cpp.s
+
+Light/directionalLight.o: Light/directionalLight.cpp.o
+.PHONY : Light/directionalLight.o
+
+# target to build an object file
+Light/directionalLight.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/directionalLight.cpp.o
+.PHONY : Light/directionalLight.cpp.o
+
+Light/directionalLight.i: Light/directionalLight.cpp.i
+.PHONY : Light/directionalLight.i
+
+# target to preprocess a source file
+Light/directionalLight.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/directionalLight.cpp.i
+.PHONY : Light/directionalLight.cpp.i
+
+Light/directionalLight.s: Light/directionalLight.cpp.s
+.PHONY : Light/directionalLight.s
+
+# target to generate assembly for a file
+Light/directionalLight.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/directionalLight.cpp.s
+.PHONY : Light/directionalLight.cpp.s
+
+Light/light.o: Light/light.cpp.o
+.PHONY : Light/light.o
+
+# target to build an object file
+Light/light.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/light.cpp.o
+.PHONY : Light/light.cpp.o
+
+Light/light.i: Light/light.cpp.i
+.PHONY : Light/light.i
+
+# target to preprocess a source file
+Light/light.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/light.cpp.i
+.PHONY : Light/light.cpp.i
+
+Light/light.s: Light/light.cpp.s
+.PHONY : Light/light.s
+
+# target to generate assembly for a file
+Light/light.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/light.cpp.s
+.PHONY : Light/light.cpp.s
+
+camera.o: camera.cpp.o
+.PHONY : camera.o
+
+# target to build an object file
+camera.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/camera.cpp.o
+.PHONY : camera.cpp.o
+
+camera.i: camera.cpp.i
+.PHONY : camera.i
+
+# target to preprocess a source file
+camera.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/camera.cpp.i
+.PHONY : camera.cpp.i
+
+camera.s: camera.cpp.s
+.PHONY : camera.s
+
+# target to generate assembly for a file
+camera.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/camera.cpp.s
+.PHONY : camera.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -153,6 +302,126 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+material.o: material.cpp.o
+.PHONY : material.o
+
+# target to build an object file
+material.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/material.cpp.o
+.PHONY : material.cpp.o
+
+material.i: material.cpp.i
+.PHONY : material.i
+
+# target to preprocess a source file
+material.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/material.cpp.i
+.PHONY : material.cpp.i
+
+material.s: material.cpp.s
+.PHONY : material.s
+
+# target to generate assembly for a file
+material.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/material.cpp.s
+.PHONY : material.cpp.s
+
+mesh.o: mesh.cpp.o
+.PHONY : mesh.o
+
+# target to build an object file
+mesh.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/mesh.cpp.o
+.PHONY : mesh.cpp.o
+
+mesh.i: mesh.cpp.i
+.PHONY : mesh.i
+
+# target to preprocess a source file
+mesh.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/mesh.cpp.i
+.PHONY : mesh.cpp.i
+
+mesh.s: mesh.cpp.s
+.PHONY : mesh.s
+
+# target to generate assembly for a file
+mesh.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/mesh.cpp.s
+.PHONY : mesh.cpp.s
+
+shader.o: shader.cpp.o
+.PHONY : shader.o
+
+# target to build an object file
+shader.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/shader.cpp.o
+.PHONY : shader.cpp.o
+
+shader.i: shader.cpp.i
+.PHONY : shader.i
+
+# target to preprocess a source file
+shader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/shader.cpp.i
+.PHONY : shader.cpp.i
+
+shader.s: shader.cpp.s
+.PHONY : shader.s
+
+# target to generate assembly for a file
+shader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/shader.cpp.s
+.PHONY : shader.cpp.s
+
+shadowMap.o: shadowMap.cpp.o
+.PHONY : shadowMap.o
+
+# target to build an object file
+shadowMap.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/shadowMap.cpp.o
+.PHONY : shadowMap.cpp.o
+
+shadowMap.i: shadowMap.cpp.i
+.PHONY : shadowMap.i
+
+# target to preprocess a source file
+shadowMap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/shadowMap.cpp.i
+.PHONY : shadowMap.cpp.i
+
+shadowMap.s: shadowMap.cpp.s
+.PHONY : shadowMap.s
+
+# target to generate assembly for a file
+shadowMap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/shadowMap.cpp.s
+.PHONY : shadowMap.cpp.s
+
+window.o: window.cpp.o
+.PHONY : window.o
+
+# target to build an object file
+window.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/window.cpp.o
+.PHONY : window.cpp.o
+
+window.i: window.cpp.i
+.PHONY : window.i
+
+# target to preprocess a source file
+window.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/window.cpp.i
+.PHONY : window.cpp.i
+
+window.s: window.cpp.s
+.PHONY : window.s
+
+# target to generate assembly for a file
+window.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/window.cpp.s
+.PHONY : window.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -161,10 +430,42 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... copy_shaders"
 	@echo "... nurbs_surface"
+	@echo "... nurbs_test"
+	@echo "... Computational/nurbs.o"
+	@echo "... Computational/nurbs.i"
+	@echo "... Computational/nurbs.s"
+	@echo "... Computational/test.o"
+	@echo "... Computational/test.i"
+	@echo "... Computational/test.s"
+	@echo "... Light/directionalLight.o"
+	@echo "... Light/directionalLight.i"
+	@echo "... Light/directionalLight.s"
+	@echo "... Light/light.o"
+	@echo "... Light/light.i"
+	@echo "... Light/light.s"
+	@echo "... camera.o"
+	@echo "... camera.i"
+	@echo "... camera.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... material.o"
+	@echo "... material.i"
+	@echo "... material.s"
+	@echo "... mesh.o"
+	@echo "... mesh.i"
+	@echo "... mesh.s"
+	@echo "... shader.o"
+	@echo "... shader.i"
+	@echo "... shader.s"
+	@echo "... shadowMap.o"
+	@echo "... shadowMap.i"
+	@echo "... shadowMap.s"
+	@echo "... window.o"
+	@echo "... window.i"
+	@echo "... window.s"
 .PHONY : help
 
 

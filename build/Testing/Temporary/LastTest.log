@@ -1,0 +1,19 @@
+Start testing: Sep 17 16:01 CEST
+----------------------------------------------------------
+1/1 Testing: nurbs_test
+1/1 Test: nurbs_test
+Command: "/home/oops/Projects/nurbsSurfaces/build/nurbs_test"
+Directory: /home/oops/Projects/nurbsSurfaces/build
+"nurbs_test" start time: Sep 17 16:01 CEST
+Output:
+----------------------------------------------------------
+44/44 checks passed
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"nurbs_test" end time: Sep 17 16:01 CEST
+"nurbs_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 17 16:01 CEST

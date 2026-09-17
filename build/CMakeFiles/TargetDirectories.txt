@@ -1,3 +1,5 @@
 /home/oops/Projects/nurbsSurfaces/build/CMakeFiles/nurbs_surface.dir
+/home/oops/Projects/nurbsSurfaces/build/CMakeFiles/copy_shaders.dir
+/home/oops/Projects/nurbsSurfaces/build/CMakeFiles/nurbs_test.dir
 /home/oops/Projects/nurbsSurfaces/build/CMakeFiles/edit_cache.dir
 /home/oops/Projects/nurbsSurfaces/build/CMakeFiles/rebuild_cache.dir
