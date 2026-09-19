@@ -124,3 +124,8 @@ std::vector<double> NURBSSurface::basisFunctions(int n, int p, const std::vector
 
     return N;
 }
+
+void NURBSSurface::setControlPoint(int i, int j, Point3D point)
+{
+    controlPoints_.at(i).at(j) = point;
+}

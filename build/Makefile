@@ -182,6 +182,30 @@ Computational/nurbs.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_test.dir/build.make CMakeFiles/nurbs_test.dir/Computational/nurbs.cpp.s
 .PHONY : Computational/nurbs.cpp.s
 
+Computational/raycasting.o: Computational/raycasting.cpp.o
+.PHONY : Computational/raycasting.o
+
+# target to build an object file
+Computational/raycasting.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Computational/raycasting.cpp.o
+.PHONY : Computational/raycasting.cpp.o
+
+Computational/raycasting.i: Computational/raycasting.cpp.i
+.PHONY : Computational/raycasting.i
+
+# target to preprocess a source file
+Computational/raycasting.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Computational/raycasting.cpp.i
+.PHONY : Computational/raycasting.cpp.i
+
+Computational/raycasting.s: Computational/raycasting.cpp.s
+.PHONY : Computational/raycasting.s
+
+# target to generate assembly for a file
+Computational/raycasting.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Computational/raycasting.cpp.s
+.PHONY : Computational/raycasting.cpp.s
+
 Computational/test.o: Computational/test.cpp.o
 .PHONY : Computational/test.o
 
@@ -253,6 +277,30 @@ Light/light.s: Light/light.cpp.s
 Light/light.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Light/light.cpp.s
 .PHONY : Light/light.cpp.s
+
+Primitives/sphere.o: Primitives/sphere.cpp.o
+.PHONY : Primitives/sphere.o
+
+# target to build an object file
+Primitives/sphere.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Primitives/sphere.cpp.o
+.PHONY : Primitives/sphere.cpp.o
+
+Primitives/sphere.i: Primitives/sphere.cpp.i
+.PHONY : Primitives/sphere.i
+
+# target to preprocess a source file
+Primitives/sphere.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Primitives/sphere.cpp.i
+.PHONY : Primitives/sphere.cpp.i
+
+Primitives/sphere.s: Primitives/sphere.cpp.s
+.PHONY : Primitives/sphere.s
+
+# target to generate assembly for a file
+Primitives/sphere.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nurbs_surface.dir/build.make CMakeFiles/nurbs_surface.dir/Primitives/sphere.cpp.s
+.PHONY : Primitives/sphere.cpp.s
 
 camera.o: camera.cpp.o
 .PHONY : camera.o
@@ -436,6 +484,9 @@ help:
 	@echo "... Computational/nurbs.o"
 	@echo "... Computational/nurbs.i"
 	@echo "... Computational/nurbs.s"
+	@echo "... Computational/raycasting.o"
+	@echo "... Computational/raycasting.i"
+	@echo "... Computational/raycasting.s"
 	@echo "... Computational/test.o"
 	@echo "... Computational/test.i"
 	@echo "... Computational/test.s"
@@ -445,6 +496,9 @@ help:
 	@echo "... Light/light.o"
 	@echo "... Light/light.i"
 	@echo "... Light/light.s"
+	@echo "... Primitives/sphere.o"
+	@echo "... Primitives/sphere.i"
+	@echo "... Primitives/sphere.s"
 	@echo "... camera.o"
 	@echo "... camera.i"
 	@echo "... camera.s"

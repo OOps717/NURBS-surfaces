@@ -108,5 +108,5 @@ void main()
 {
     vec3 finalColour = calcDirectionalLight();
 
-    FragColor = vec4(finalColour, 1.0);
+    FragColor = vec4(finalColour, 0.65);
 }

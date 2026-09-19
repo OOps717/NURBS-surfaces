@@ -1,4 +1,5 @@
-#include <cmath>
+#include <limits>
+#include <memory>
 #include <iostream>
 #include <vector>
 #include <glm/gtc/type_ptr.hpp>
@@ -10,6 +11,8 @@
 #include "Light/directionalLight.h"
 #include "material.h"
 #include "Computational/nurbs.h"
+#include "Computational/raycasting.h"
+#include "Primitives/sphere.h"
 
 Window mainWindow(1366, 768);
 Camera camera;
@@ -18,24 +21,61 @@ Shader directionalShadowShader;
 
 DirectionalLight light;
 
-// Material dullMaterial;
-
-std::vector<Mesh*> meshList;
+Mesh nurbsSurfaceMesh;
+std::unique_ptr<NURBSSurface> surface;
+int controlPointColumns = 0;
+bool dragging = false;
+glm::vec3 dragPlanePoint(0.0f), dragPlaneNormal(0.0f), dragOffset(0.0f);
 Shader sceneShader;
 Shader controlPointShader;
-GLuint controlPointVAO = 0, controlPointVBO = 0;
-GLsizei controlPointCount = 0;
+std::vector<std::unique_ptr<Sphere>> controlPointSpheres;
 GLint uniformObjectColour = -1;
+GLint uniformControlColour = -1;
+int selectedControlPoint = -1;
 
 GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosition = 0;
 GLuint uniformSpecularIntensity = 0, uniformShininess = 0;
 
 GLfloat deltaTime = 0.0f, lastTime = 0.0f;
 
+// Rebuild the small mesh only when a control point changes.
+void updateSurfaceMesh()
+{
+	auto data = surface->generateMesh(40, 40);
+	nurbsSurfaceMesh.clearMesh();
+	nurbsSurfaceMesh.createMesh(data.vertices.data(), data.indices.data(),
+			static_cast<unsigned int>(data.vertices.size()),
+			static_cast<unsigned int>(data.indices.size()), 8 * sizeof(GLfloat));
+}
+
+bool intersectDragPlane(const Raycasting& ray, glm::vec3& hit)
+{
+	/*
+		O + tD = P,
+			O - the ray origin
+			D - the ray direction
+			t - the distance along the ray
+			P - a point on the plane
+
+		(P - Q) . N = 0,
+			Q - a point on the plane
+			N - the plane normal
+
+		t = ((Q - O) . N) / (D . N)
+	*/
+
+	const float denominator = glm::dot(ray.getDirection(), dragPlaneNormal);
+	if (std::abs(denominator) < 1e-6f) return false;
+	const float distance = glm::dot(dragPlanePoint - ray.getOrigin(), dragPlaneNormal) / denominator;
+	if (distance < 0.0f) return false;
+	hit = ray.getOrigin() + distance * ray.getDirection();
+	return true;
+}
+
 void CreateObjects()
 {
 
-	// Quadratic surface: the raised centre control point creates a smooth hill.
+	// Quadratic surface: the raised centre control point creates a smooth hill
 	const std::vector<double> knots{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
 	const std::vector<std::vector<Point3D>> controlPoints{
 		{{-10.0, 0.0, -10.0}, {0.0, 0.0, -10.0}, {10.0, 0.0, -10.0}},
@@ -43,99 +83,31 @@ void CreateObjects()
 		{{-10.0, 0.0,  10.0}, {0.0, 0.0,  10.0}, {10.0, 0.0,  10.0}}
 	};
 
-	// Small triangle spheres centred on the control points.
 	constexpr float controlPointRadius = 0.3f;
-	constexpr int stacks = 12, slices = 20;
-	constexpr float pi = 3.14159265358979323846f;
-	std::vector<GLfloat> pointVertices;
-	auto normalAt = [=](int stack, int slice) {
-		const float latitude = pi * stack / stacks;
-		const float longitude = 2.0f * pi * slice / slices;
-		return glm::vec3(std::sin(latitude) * std::cos(longitude),
-		                 std::cos(latitude), std::sin(latitude) * std::sin(longitude));
-	};
 	for (const auto& row : controlPoints) {
 		for (const auto& point : row) {
-			const glm::vec3 centre(point.x, point.y, point.z);
-			auto appendVertex = [&](glm::vec3 normal) {
-				const glm::vec3 position = centre + controlPointRadius * normal;
-				pointVertices.insert(pointVertices.end(), {
-					position.x, position.y, position.z, normal.x, normal.y, normal.z
-				});
-			};
-			for (int i = 0; i < stacks; ++i) {
-				for (int j = 0; j < slices; ++j) {
-					const auto a = normalAt(i, j), b = normalAt(i + 1, j);
-					const auto c = normalAt(i, j + 1), d = normalAt(i + 1, j + 1);
-					if (i > 0) { appendVertex(a); appendVertex(c); appendVertex(b); }
-					if (i + 1 < stacks) { appendVertex(c); appendVertex(d); appendVertex(b); }
-				}
-			}
+			auto sphere = std::make_unique<Sphere>(20, 12, controlPointRadius);
+			sphere->CreateSphere();
+			sphere->translate(static_cast<float>(point.x), static_cast<float>(point.y), static_cast<float>(point.z));
+			controlPointSpheres.push_back(std::move(sphere));
 		}
 	}
-	controlPointCount = static_cast<GLsizei>(pointVertices.size() / 6);
-	glGenVertexArrays(1, &controlPointVAO);
-	glGenBuffers(1, &controlPointVBO);
-	glBindVertexArray(controlPointVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, controlPointVBO);
-	glBufferData(GL_ARRAY_BUFFER, pointVertices.size() * sizeof(GLfloat), pointVertices.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	const std::vector<std::vector<double>> weights(3, std::vector<double>(3, 1.0));
 
-	NURBSSurface surface(3, 3, 2, 2, knots, knots, controlPoints, weights);
-	SurfaceMeshData nurbsMesh = surface.generateMesh(40, 40);
-
-	for (std::size_t i = 0; i + 4 < nurbsMesh.vertices.size(); i += 5) {
-		std::cout << "x=" << nurbsMesh.vertices[i]
-						<< ", y=" << nurbsMesh.vertices[i + 1]
-						<< ", z=" << nurbsMesh.vertices[i + 2]
-						<< ", u=" << nurbsMesh.vertices[i + 3]
-						<< ", v=" << nurbsMesh.vertices[i + 4] << '\n';
-	}
-
-	Mesh *nurbsSurfaceMesh = new Mesh();
-	// obj3->createMesh(floorVertices, floorIndices, 20, 6, sizeof(GLfloat) * 8);
-	nurbsSurfaceMesh->createMesh(
-    nurbsMesh.vertices.data(),
-    nurbsMesh.indices.data(),
-    static_cast<unsigned int>(nurbsMesh.vertices.size()),
-    static_cast<unsigned int>(nurbsMesh.indices.size()),
-    sizeof(GLfloat) * 8
-	);
-	meshList.push_back(nurbsSurfaceMesh);
+	controlPointColumns = static_cast<int>(controlPoints.front().size());
+	surface = std::make_unique<NURBSSurface>(3, 3, 2, 2, knots, knots, controlPoints, weights);
+	updateSurfaceMesh();
+	nurbsSurfaceMesh.translate(0.0f, -4.0f, 0.0f);
 }
 
 void CreateShaders()
 {
 	controlPointShader.CreateFromFiles("Shaders/controlPoints.vert", "Shaders/controlPoints.frag");
+	uniformControlColour = glGetUniformLocation(controlPointShader.GetShaderProgram(), "markerColour");
 	sceneShader.CreateFromFiles("Shaders/shader.vert", "Shaders/shader.frag");
 	uniformObjectColour = glGetUniformLocation(sceneShader.GetShaderProgram(), "objectColour");
 	directionalShadowShader.CreateFromFiles("Shaders/directionalShadowMap.vert", "Shaders/directionalShadowMap.frag");
-}
-
-void renderScene()
-{
-	// meshList[0]->reinitializeModel();
-	// meshList[0]->translate(0.0f, 0.0f, -0.5f);
-	// meshList[0]->scale(0.4f, 0.4f, 0.4f);
-	// glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(meshList[0]->getModelMatrix()));
-	// meshList[0]->renderMesh();
-
-	// meshList[1]->reinitializeModel();
-	// meshList[1]->translate(0.0f, 1.0f, -2.5f);
-	// glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(meshList[1]->getModelMatrix()));
-	// meshList[1]->renderMesh();
-
-	meshList[0]->reinitializeModel();
-	meshList[0]->translate(0.0f, -4.0f, 0.0f);
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(meshList[0]->getModelMatrix()));
-	meshList[0]->renderMesh();
 }
 
 void directionalShadowMapPass(DirectionalLight* dLight)
@@ -151,7 +123,13 @@ void directionalShadowMapPass(DirectionalLight* dLight)
 	directionalShadowShader.SetDirectionalLightTransform(&lightTransform);
 
 	directionalShadowShader.validate();
-	renderScene();
+	nurbsSurfaceMesh.reinitializeModel();
+	nurbsSurfaceMesh.translate(0.0f, -4.0f, 0.0f);
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(nurbsSurfaceMesh.getModelMatrix()));
+
+
+
+	nurbsSurfaceMesh.renderMesh();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -164,18 +142,31 @@ void renderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	controlPointShader.UseShader();
+	glUniformMatrix4fv(controlPointShader.GetViewLocation(), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniformMatrix4fv(controlPointShader.GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	for (std::size_t i = 0; i < controlPointSpheres.size(); ++i) {
+		const auto& sphere = controlPointSpheres[i];
+		const glm::vec3 colour = static_cast<int>(i) == selectedControlPoint
+					? glm::vec3(0.2f, 1.0f, 0.35f) : glm::vec3(1.0f, 0.65f, 0.15f);
+		glUniform3fv(uniformControlColour, 1, glm::value_ptr(colour));
+		const glm::mat4 model = nurbsSurfaceMesh.getModelMatrix() * sphere->getModelMatrix();
+		glUniformMatrix4fv(controlPointShader.GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+		sphere->renderMesh();
+	}
+
 	sceneShader.UseShader();
 	glUniform3f(uniformObjectColour, 0.55f, 0.65f, 0.72f);
 
 	uniformModel = sceneShader.GetModelLocation();
 	uniformProjection = sceneShader.GetProjectionLocation();
 	uniformView = sceneShader.GetViewLocation();
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	uniformEyePosition = sceneShader.GetEyePositionLocation();
 	uniformSpecularIntensity = sceneShader.GetSpecularIntensityLocation();
 	uniformShininess = sceneShader.GetShininessLocation();
 
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 	sceneShader.SetDirectionalLight(&light);
@@ -187,16 +178,18 @@ void renderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 
 	sceneShader.SetDirectionalShadowMap(2);
 
-	renderScene();
+	nurbsSurfaceMesh.reinitializeModel();
+	nurbsSurfaceMesh.translate(0.0f, -4.0f, 0.0f);
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(nurbsSurfaceMesh.getModelMatrix()));
 
-	controlPointShader.UseShader();
-	const glm::mat4 model = meshList[0]->getModelMatrix();
-	glUniformMatrix4fv(controlPointShader.GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(controlPointShader.GetViewLocation(), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniformMatrix4fv(controlPointShader.GetProjectionLocation(), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glBindVertexArray(controlPointVAO);
-	glDrawArrays(GL_TRIANGLES, 0, controlPointCount);
-	glBindVertexArray(0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
+
+	nurbsSurfaceMesh.renderMesh();
+
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
 }
 
 int main()
@@ -206,7 +199,7 @@ int main()
 	CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(32.0f, 24.0f, 38.0f), glm::vec3(0.0f, 1.0f, 0.0f), -130.1f, -17.9f, 5.0f, 0.5f);
+	camera = Camera(glm::vec3(32.0f, 24.0f, 38.0f), glm::vec3(0.0f, 1.0f, 0.0f), -130.1f, -17.9f, 15.5f, 0.5f);
 
 	light = DirectionalLight(2048, 2048,
 								1.0f, 1.0f, 1.0f,
@@ -225,23 +218,77 @@ int main()
 		lastTime = now;
 
 		glfwPollEvents();
+		mainWindow.refreshBufferSize();
+		int windowWidth, windowHeight;
+		mainWindow.getWindowSize(windowWidth, windowHeight);
+		if (windowWidth <= 0 || windowHeight <= 0 || mainWindow.getBufferWidth() <= 0 || mainWindow.getBufferHeight() <= 0)
+				continue;
+		projection = glm::perspective(glm::radians(45.0f),
+				static_cast<float>(mainWindow.getBufferWidth()) / mainWindow.getBufferHeight(), 0.1f, 100.0f);
 		camera.keyControl(mainWindow.getKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
+		glm::mat4 view = camera.calculateViewMatrix();
+		double mouseX, mouseY;
+		if (!mainWindow.isLeftMousePressed()) dragging = false;
+
+		if (mainWindow.consumeLeftClick(mouseX, mouseY)) {
+			dragging = false;
+			Raycasting ray(mouseX, mouseY, windowWidth, windowHeight, projection, view);
+
+			selectedControlPoint = -1;
+			float nearest = std::numeric_limits<float>::max();
+			for (std::size_t i = 0; i < controlPointSpheres.size(); ++i) {
+				const auto& sphere = controlPointSpheres[i];
+				float distance;
+				if (ray.intersectSphere(nurbsSurfaceMesh.getModelMatrix() * sphere->getModelMatrix(),
+															sphere->getRadius(), distance) && distance < nearest) {
+					nearest = distance;
+					selectedControlPoint = static_cast<int>(i);
+				}
+			}
+			if (selectedControlPoint >= 0 && mainWindow.isLeftMousePressed()) {
+				// Control Point in world space, with drag plane normal along the camera direction
+				dragPlanePoint = glm::vec3(nurbsSurfaceMesh.getModelMatrix()
+						* controlPointSpheres[selectedControlPoint]->getModelMatrix()[3]);
+				dragPlaneNormal = camera.getCameraDirection();
+				glm::vec3 hit;
+				if (intersectDragPlane(ray, hit)) {
+						dragOffset = dragPlanePoint - hit;
+						dragging = true;
+				}
+			}
+		}
+
+		if (dragging) {
+				mainWindow.getCursorPosition(mouseX, mouseY);
+				Raycasting ray(mouseX, mouseY, windowWidth, windowHeight, projection, view);
+				glm::vec3 hit;
+				if (intersectDragPlane(ray, hit)) {
+						const glm::vec3 position = glm::vec3(glm::inverse(nurbsSurfaceMesh.getModelMatrix())
+								* glm::vec4(hit + dragOffset, 1.0f));
+						auto& sphere = controlPointSpheres[selectedControlPoint];
+						const glm::vec3 delta = position - sphere->getPosition();
+						if (glm::dot(delta, delta) > 1e-8f) {
+								surface->setControlPoint(selectedControlPoint / controlPointColumns,
+										selectedControlPoint % controlPointColumns, {position.x, position.y, position.z});
+								sphere->reinitializeModel();
+								sphere->translate(position.x, position.y, position.z);
+								updateSurfaceMesh();
+						}
+				}
+		}
 		glCullFace(GL_FRONT);
 		directionalShadowMapPass(&light);
 		glCullFace(GL_BACK);
-		glm::mat4 view = camera.calculateViewMatrix();
 		renderPass(projection, view);
 
 		glUseProgram(0);
 
 		mainWindow.swapBuffers();
 	}
-	for (Mesh* mesh : meshList) delete mesh;
-	meshList.clear();
-	glDeleteBuffers(1, &controlPointVBO);
-	glDeleteVertexArrays(1, &controlPointVAO);
+	nurbsSurfaceMesh.clearMesh();
+	controlPointSpheres.clear();
 	controlPointShader.ClearShader();
 	sceneShader.ClearShader();
 	directionalShadowShader.ClearShader();

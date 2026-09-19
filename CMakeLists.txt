@@ -13,6 +13,8 @@ find_package(glm REQUIRED)
 add_executable(nurbs_surface
     main.cpp
     Computational/nurbs.cpp
+    Computational/raycasting.cpp
+    Primitives/sphere.cpp
     camera.cpp
     window.cpp
     mesh.cpp

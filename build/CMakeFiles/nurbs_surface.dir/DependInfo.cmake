@@ -9,8 +9,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/oops/Projects/nurbsSurfaces/Computational/nurbs.cpp" "CMakeFiles/nurbs_surface.dir/Computational/nurbs.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/Computational/nurbs.cpp.o.d"
+  "/home/oops/Projects/nurbsSurfaces/Computational/raycasting.cpp" "CMakeFiles/nurbs_surface.dir/Computational/raycasting.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/Computational/raycasting.cpp.o.d"
   "/home/oops/Projects/nurbsSurfaces/Light/directionalLight.cpp" "CMakeFiles/nurbs_surface.dir/Light/directionalLight.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/Light/directionalLight.cpp.o.d"
   "/home/oops/Projects/nurbsSurfaces/Light/light.cpp" "CMakeFiles/nurbs_surface.dir/Light/light.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/Light/light.cpp.o.d"
+  "/home/oops/Projects/nurbsSurfaces/Primitives/sphere.cpp" "CMakeFiles/nurbs_surface.dir/Primitives/sphere.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/Primitives/sphere.cpp.o.d"
   "/home/oops/Projects/nurbsSurfaces/camera.cpp" "CMakeFiles/nurbs_surface.dir/camera.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/camera.cpp.o.d"
   "/home/oops/Projects/nurbsSurfaces/main.cpp" "CMakeFiles/nurbs_surface.dir/main.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/main.cpp.o.d"
   "/home/oops/Projects/nurbsSurfaces/material.cpp" "CMakeFiles/nurbs_surface.dir/material.cpp.o" "gcc" "CMakeFiles/nurbs_surface.dir/material.cpp.o.d"

@@ -29,6 +29,8 @@ public:
 
     Point3D evaluate(double u, double v) const ;
 
+    void setControlPoint(int i, int j, Point3D point);
+
     SurfaceMeshData generateMesh(int segmentsU, int segmentsV) const;
 
 private:
