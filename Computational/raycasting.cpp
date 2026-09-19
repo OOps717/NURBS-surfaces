@@ -50,3 +50,27 @@ bool Raycasting::intersectSphere(const glm::mat4& model, float radius, float& di
     distance = hit;
     return true;
 }
+
+bool Raycasting::intersectPlane(const glm::vec3& point, const glm::vec3& normal, glm::vec3& hit) const
+{
+    /*
+        O + tD = P,
+            O - the ray origin
+            D - the ray direction
+            t - the distance along the ray
+            P - a point on the plane
+
+        (P - Q) . N = 0,
+            Q - a point on the plane
+            N - the plane normal
+
+        t = ((Q - O) . N) / (D . N)
+    */
+
+    const float denominator = glm::dot(direction_, normal);
+    if (std::abs(denominator) < 1e-6f) return false;
+    const float distance = glm::dot(point - origin_, normal) / denominator;
+    if (distance < 0.0f) return false;
+    hit = origin_ + distance * direction_;
+    return true;
+}

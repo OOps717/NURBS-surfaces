@@ -48,39 +48,17 @@ void updateSurfaceMesh()
 			static_cast<unsigned int>(data.indices.size()), 8 * sizeof(GLfloat));
 }
 
-bool intersectDragPlane(const Raycasting& ray, glm::vec3& hit)
-{
-	/*
-		O + tD = P,
-			O - the ray origin
-			D - the ray direction
-			t - the distance along the ray
-			P - a point on the plane
-
-		(P - Q) . N = 0,
-			Q - a point on the plane
-			N - the plane normal
-
-		t = ((Q - O) . N) / (D . N)
-	*/
-
-	const float denominator = glm::dot(ray.getDirection(), dragPlaneNormal);
-	if (std::abs(denominator) < 1e-6f) return false;
-	const float distance = glm::dot(dragPlanePoint - ray.getOrigin(), dragPlaneNormal) / denominator;
-	if (distance < 0.0f) return false;
-	hit = ray.getOrigin() + distance * ray.getDirection();
-	return true;
-}
-
 void CreateObjects()
 {
 
 	// Quadratic surface: the raised centre control point creates a smooth hill
-	const std::vector<double> knots{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
+	const std::vector<double> knotsU{0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0};
+	const std::vector<double> knotsV{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
 	const std::vector<std::vector<Point3D>> controlPoints{
 		{{-10.0, 0.0, -10.0}, {0.0, 0.0, -10.0}, {10.0, 0.0, -10.0}},
 		{{-10.0, 0.0,   0.0}, {0.0, 24.0,  0.0}, {10.0, 0.0,   0.0}},
-		{{-10.0, 0.0,  10.0}, {0.0, 0.0,  10.0}, {10.0, 0.0,  10.0}}
+		{{-10.0, 0.0,  10.0}, {0.0, -15.0,  10.0}, {10.0, 0.0,  10.0}},
+		{{-10.0, 0.0,  20.0}, {0.0, 0.0,  20.0}, {10.0, 0.0,  20.0}}
 	};
 
 	constexpr float controlPointRadius = 0.3f;
@@ -93,10 +71,10 @@ void CreateObjects()
 		}
 	}
 
-	const std::vector<std::vector<double>> weights(3, std::vector<double>(3, 1.0));
+	const std::vector<std::vector<double>> weights(4, std::vector<double>(3, 1.0));
 
 	controlPointColumns = static_cast<int>(controlPoints.front().size());
-	surface = std::make_unique<NURBSSurface>(3, 3, 2, 2, knots, knots, controlPoints, weights);
+	surface = std::make_unique<NURBSSurface>(4, 3, 3, 2, knotsU, knotsV, controlPoints, weights);
 	updateSurfaceMesh();
 	nurbsSurfaceMesh.translate(0.0f, -4.0f, 0.0f);
 }
@@ -247,16 +225,18 @@ int main()
 					selectedControlPoint = static_cast<int>(i);
 				}
 			}
+
 			if (selectedControlPoint >= 0 && mainWindow.isLeftMousePressed()) {
 				// Control Point in world space, with drag plane normal along the camera direction
 				dragPlanePoint = glm::vec3(nurbsSurfaceMesh.getModelMatrix()
 						* controlPointSpheres[selectedControlPoint]->getModelMatrix()[3]);
 				dragPlaneNormal = camera.getCameraDirection();
+
 				glm::vec3 hit;
-				if (intersectDragPlane(ray, hit)) {
-						dragOffset = dragPlanePoint - hit;
-						dragging = true;
-				}
+				ray.intersectPlane(dragPlanePoint, dragPlaneNormal, hit);
+				dragOffset = dragPlanePoint - hit;
+				dragging = true;
+
 			}
 		}
 
@@ -264,19 +244,19 @@ int main()
 				mainWindow.getCursorPosition(mouseX, mouseY);
 				Raycasting ray(mouseX, mouseY, windowWidth, windowHeight, projection, view);
 				glm::vec3 hit;
-				if (intersectDragPlane(ray, hit)) {
-						const glm::vec3 position = glm::vec3(glm::inverse(nurbsSurfaceMesh.getModelMatrix())
-								* glm::vec4(hit + dragOffset, 1.0f));
-						auto& sphere = controlPointSpheres[selectedControlPoint];
-						const glm::vec3 delta = position - sphere->getPosition();
-						if (glm::dot(delta, delta) > 1e-8f) {
-								surface->setControlPoint(selectedControlPoint / controlPointColumns,
-										selectedControlPoint % controlPointColumns, {position.x, position.y, position.z});
-								sphere->reinitializeModel();
-								sphere->translate(position.x, position.y, position.z);
-								updateSurfaceMesh();
-						}
+				ray.intersectPlane(dragPlanePoint, dragPlaneNormal, hit);
+				const glm::vec3 position = glm::vec3(glm::inverse(nurbsSurfaceMesh.getModelMatrix())
+						* glm::vec4(hit + dragOffset, 1.0f));
+				auto& sphere = controlPointSpheres[selectedControlPoint];
+				const glm::vec3 delta = position - sphere->getPosition();
+				if (glm::dot(delta, delta) > 1e-8f) {
+						surface->setControlPoint(selectedControlPoint / controlPointColumns,
+								selectedControlPoint % controlPointColumns, {position.x, position.y, position.z});
+						sphere->reinitializeModel();
+						sphere->translate(position.x, position.y, position.z);
+						updateSurfaceMesh();
 				}
+
 		}
 		glCullFace(GL_FRONT);
 		directionalShadowMapPass(&light);

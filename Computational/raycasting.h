@@ -12,6 +12,9 @@ public:
     // Distance is measured from the near clipping plane along the world-space ray.
     bool intersectSphere(const glm::mat4& model, float radius, float& distance) const;
 
+    // Plane and hit are in world space; intersections beyond the far clipping plane are allowed.
+    bool intersectPlane(const glm::vec3& point, const glm::vec3& normal, glm::vec3& hit) const;
+
     const glm::vec3& getOrigin() const { return origin_; }
     const glm::vec3& getDirection() const { return direction_; }
 
